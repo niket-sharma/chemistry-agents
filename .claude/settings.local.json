@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pipenv:*)",
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "Bash(move conftest.py conftest.py.bak)",
+      "Bash(mv:*)"
+    ],
+    "deny": []
+  }
+}

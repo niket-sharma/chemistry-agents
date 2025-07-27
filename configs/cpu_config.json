@@ -1,0 +1,49 @@
+{
+  "description": "CPU-optimized configuration for chemistry agents",
+  "agent_config": {
+    "device": "cpu",
+    "batch_size": 4,
+    "cpu_optimization": true,
+    "cache_predictions": true,
+    "log_level": "INFO"
+  },
+  "training_config": {
+    "batch_size": 4,
+    "gradient_accumulation_steps": 4,
+    "learning_rate": 3e-5,
+    "epochs": 5,
+    "warmup_steps": 100,
+    "num_workers": 0
+  },
+  "model_recommendations": {
+    "cpu_friendly_models": [
+      "DeepChem/ChemBERTa-10M-MLM",
+      "DeepChem/ChemBERTa-5M-MLM"
+    ],
+    "avoid_on_cpu": [
+      "DeepChem/ChemBERTa-77M-MLM"
+    ]
+  },
+  "api_config": {
+    "provider": "huggingface",
+    "default_model": "DeepChem/ChemBERTa-77M-MLM",
+    "timeout": 30,
+    "max_retries": 3
+  },
+  "cloud_options": {
+    "recommended_platforms": [
+      {
+        "name": "Google Colab",
+        "cost": "Free",
+        "gpu": "Tesla T4",
+        "time_limit": "12 hours"
+      },
+      {
+        "name": "Kaggle Notebooks", 
+        "cost": "Free",
+        "gpu": "Tesla P100",
+        "time_limit": "30 hours/week"
+      }
+    ]
+  }
+}
