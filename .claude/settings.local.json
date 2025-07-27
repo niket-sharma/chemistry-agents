@@ -5,7 +5,9 @@
       "Bash(pip install:*)",
       "Bash(python:*)",
       "Bash(move conftest.py conftest.py.bak)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": []
   }
