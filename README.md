@@ -9,7 +9,10 @@ A comprehensive framework for molecular property prediction using fine-tuned AI 
 ## 🚀 Features
 
 - **Multiple Model Architectures**: Neural networks, Graph Neural Networks (GNNs), and Transformer models
-- **Specialized Agents**: Dedicated agents for solubility, toxicity, and drug discovery tasks
+- **Specialized Agents**: Dedicated agents for molecular properties, chemical engineering unit operations, and drug discovery
+- **Unit Operations Agent**: Distillation, heat exchangers, reactors, separation processes, and fluid mechanics
+- **CPU Optimization**: Full support for CPU-only systems with optimized performance
+- **API Integration**: External model access via Hugging Face and cloud platforms
 - **Pre-trained Models**: Built on ChemBERTa and other chemistry-specific transformers
 - **Comprehensive Evaluation**: Industry-standard metrics and benchmarking tools
 - **Easy Fine-tuning**: Scripts for customizing models on your own datasets
@@ -186,6 +189,50 @@ Comprehensive agent combining multiple prediction models for drug discovery work
 - Compound library screening
 - Lead optimization recommendations
 - Development feasibility assessment
+
+### UnitOperationsAgent
+Chemical engineering unit operations agent for process design and optimization.
+
+**Supported Operations:**
+- **Distillation**: Tray efficiency, theoretical stages, HETP, separation factors
+- **Heat Exchangers**: Heat transfer coefficients, pressure drop, LMTD correction
+- **Reactors**: Kinetics, conversion, selectivity, residence time analysis
+- **Separation Processes**: Absorption, extraction, VLE, mass transfer
+- **Fluid Mechanics**: Reynolds numbers, pressure drop, flow patterns
+
+**Features:**
+- Empirical correlations (Fenske, Sieder-Tate, Arrhenius, etc.)
+- Physical property database (Antoine coefficients, critical properties)
+- Batch processing for complete process analysis
+- Parameter sensitivity analysis
+- CPU-optimized calculations
+
+**Example:**
+```python
+from chemistry_agents import UnitOperationsAgent, UnitOperationConfig
+
+# Initialize unit operations agent
+agent = UnitOperationsAgent()
+agent.load_model()
+
+# Configure distillation column
+config = UnitOperationConfig(
+    operation_type="distillation",
+    temperature=351.15,  # K
+    pressure=101325.0,   # Pa
+    operation_params={
+        'alpha': 2.37,      # Relative volatility
+        'xd': 0.89,         # Distillate composition
+        'xw': 0.02,         # Bottoms composition
+        'xf': 0.40          # Feed composition
+    }
+)
+
+# Predict performance
+result = agent.predict_single(config)
+print(f"Performance: {result.prediction:.3f}")
+print(f"Theoretical stages: {result.additional_info['distillation_results']['theoretical_stages']:.1f}")
+```
 
 ## 🎯 Training Your Own Models
 

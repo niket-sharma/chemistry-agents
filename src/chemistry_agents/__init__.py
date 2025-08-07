@@ -7,8 +7,9 @@ __version__ = "0.1.0"
 __author__ = "Chemistry Agents Team"
 
 from .models import MolecularPropertyPredictor
-from .agents import PropertyPredictionAgent, SolubilityAgent, ToxicityAgent, DrugDiscoveryAgent
+from .agents import PropertyPredictionAgent, SolubilityAgent, ToxicityAgent, DrugDiscoveryAgent, UnitOperationsAgent
 from .agents.base_agent import AgentConfig
+from .agents.unit_operations_agent import UnitOperationConfig
 from .utils import MolecularFeatureExtractor, SMILESProcessor
 
 # API Integration (optional)
@@ -29,7 +30,9 @@ __all__ = [
     "SolubilityAgent",
     "ToxicityAgent",
     "DrugDiscoveryAgent",
+    "UnitOperationsAgent",
     "AgentConfig",
+    "UnitOperationConfig",
     "MolecularFeatureExtractor",
     "SMILESProcessor"
 ]
