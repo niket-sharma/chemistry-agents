@@ -5,15 +5,15 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "chemistry-agents"
 version = "0.1.0"
-description = "AI-powered molecular property prediction and analysis framework"
+description = "AI-powered molecular property prediction and chemical engineering unit operations framework"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {file = "LICENSE"}
 authors = [
-    {name = "Chemistry Agents Team", email = "info@chemistry-agents.com"}
+    {name = "Niket Sharma", email = "niket.sharma@example.com"}
 ]
 maintainers = [
-    {name = "Chemistry Agents Team", email = "info@chemistry-agents.com"}
+    {name = "Niket Sharma", email = "niket.sharma@example.com"}
 ]
 keywords = [
     "chemistry", 
@@ -25,7 +25,13 @@ keywords = [
     "transformers", 
     "graph-neural-networks", 
     "pytorch", 
-    "rdkit"
+    "rdkit",
+    "chemical-engineering",
+    "unit-operations",
+    "distillation",
+    "heat-exchangers",
+    "reactors",
+    "separation-processes"
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -102,11 +108,11 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/chemistry-agents"
-Documentation = "https://chemistry-agents.readthedocs.io/"
-Repository = "https://github.com/yourusername/chemistry-agents.git"
-"Bug Tracker" = "https://github.com/yourusername/chemistry-agents/issues"
-Changelog = "https://github.com/yourusername/chemistry-agents/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/niket-sharma/CHEMISTRY-AGENTS"
+Documentation = "https://github.com/niket-sharma/CHEMISTRY-AGENTS#readme"
+Repository = "https://github.com/niket-sharma/CHEMISTRY-AGENTS.git"
+"Bug Tracker" = "https://github.com/niket-sharma/CHEMISTRY-AGENTS/issues"
+Changelog = "https://github.com/niket-sharma/CHEMISTRY-AGENTS/blob/main/CHANGELOG.md"
 
 [project.scripts]
 chemistry-agents-train = "chemistry_agents.scripts.train_model:main"

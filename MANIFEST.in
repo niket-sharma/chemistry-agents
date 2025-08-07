@@ -1,0 +1,90 @@
+# Include all necessary files for the chemistry-agents package
+include README.md
+include LICENSE
+include CHANGELOG.md
+include CONTRIBUTING.md
+include CPU_OPTIMIZATION_GUIDE.md
+include INSTALLATION.md
+include START_HERE.md
+include CHANGES_SUMMARY.md
+include requirements.txt
+include Pipfile
+include Pipfile.minimal
+
+# Configuration files
+recursive-include configs *.json
+recursive-include src/chemistry_agents/configs *.json
+
+# Example scripts and usage files
+recursive-include examples *.py
+recursive-include examples *.ipynb
+recursive-include examples *.md
+
+# Documentation
+recursive-include docs *.md
+recursive-include docs *.rst
+recursive-include docs *.txt
+
+# Tests (include in source distribution)
+recursive-include tests *.py
+recursive-include tests *.json
+recursive-include tests *.csv
+recursive-include tests *.txt
+
+# Scripts
+recursive-include scripts *.py
+recursive-include scripts *.sh
+recursive-include scripts *.bat
+
+# Data files
+recursive-include data *.csv
+recursive-include data *.json
+recursive-include data *.txt
+recursive-include src/chemistry_agents/data *.csv
+recursive-include src/chemistry_agents/data *.json
+
+# Model files
+recursive-include models *.pt
+recursive-include models *.pth
+recursive-include models *.pkl
+recursive-include models *.joblib
+recursive-include src/chemistry_agents/models *.pt
+recursive-include src/chemistry_agents/models *.pth
+
+# Package metadata
+include pyproject.toml
+include setup.py
+include setup.cfg
+
+# Development and CI files (exclude from wheel)
+include .gitignore
+include .pre-commit-config.yaml
+recursive-include .github *.yml
+recursive-include .github *.yaml
+
+# Exclude compiled Python files
+global-exclude *.py[cod]
+global-exclude __pycache__
+global-exclude *.so
+global-exclude .DS_Store
+global-exclude .git*
+global-exclude *.egg-info/*
+
+# Exclude test artifacts
+global-exclude .coverage
+global-exclude .pytest_cache
+global-exclude .tox
+global-exclude htmlcov
+
+# Exclude development artifacts
+global-exclude .vscode
+global-exclude .idea
+global-exclude *.swp
+global-exclude *.swo
+global-exclude *~
+
+# Include package data
+recursive-include src/chemistry_agents *.json
+recursive-include src/chemistry_agents *.yaml
+recursive-include src/chemistry_agents *.yml
+recursive-include src/chemistry_agents *.txt

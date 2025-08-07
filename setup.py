@@ -94,16 +94,16 @@ extras_require['all'] = list(set([
 setup(
     name="chemistry-agents",
     version="0.1.0",
-    author="Chemistry Agents Team",
-    author_email="info@chemistry-agents.com",
-    description="AI-powered molecular property prediction and analysis framework",
+    author="Niket Sharma",
+    author_email="niket.sharma@example.com",
+    description="AI-powered molecular property prediction and chemical engineering unit operations framework",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/chemistry-agents",
+    url="https://github.com/niket-sharma/CHEMISTRY-AGENTS",
     project_urls={
-        "Bug Tracker": "https://github.com/yourusername/chemistry-agents/issues",
-        "Documentation": "https://chemistry-agents.readthedocs.io/",
-        "Source Code": "https://github.com/yourusername/chemistry-agents",
+        "Bug Tracker": "https://github.com/niket-sharma/CHEMISTRY-AGENTS/issues",
+        "Documentation": "https://github.com/niket-sharma/CHEMISTRY-AGENTS#readme",
+        "Source Code": "https://github.com/niket-sharma/CHEMISTRY-AGENTS",
     },
     packages=find_packages(where="src"),
     package_dir={"": "src"},
@@ -144,7 +144,9 @@ setup(
     keywords=[
         "chemistry", "molecular-property-prediction", "drug-discovery", 
         "cheminformatics", "machine-learning", "deep-learning", 
-        "transformers", "graph-neural-networks", "pytorch", "rdkit"
+        "transformers", "graph-neural-networks", "pytorch", "rdkit",
+        "chemical-engineering", "unit-operations", "distillation", 
+        "heat-exchangers", "reactors", "separation-processes"
     ],
     license="MIT",
     zip_safe=False,
