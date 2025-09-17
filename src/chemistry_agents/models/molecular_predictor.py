@@ -118,7 +118,7 @@ class MolecularFeatureExtractor:
             Descriptors.TPSA,
             Descriptors.NumRotatableBonds,
             Descriptors.NumAromaticRings,
-            Descriptors.FractionCsp3,
+            Descriptors.FractionCSP3,
             Descriptors.BertzCT,
             rdMolDescriptors.CalcNumLipinskiHBD,
             rdMolDescriptors.CalcNumLipinskiHBA,

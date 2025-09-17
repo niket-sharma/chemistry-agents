@@ -6,7 +6,14 @@ CPU-optimized with API integration support
 __version__ = "0.1.0"
 __author__ = "Chemistry Agents Team"
 
-from .models import MolecularPropertyPredictor
+# Core models and agents
+try:
+    from .models import MolecularPropertyPredictor
+    _MODELS_AVAILABLE = True
+except ImportError as e:
+    print(f"Warning: Some models unavailable due to missing dependencies: {e}")
+    _MODELS_AVAILABLE = False
+
 from .agents import PropertyPredictionAgent, SolubilityAgent, ToxicityAgent, DrugDiscoveryAgent, UnitOperationsAgent
 from .agents.base_agent import AgentConfig
 from .agents.unit_operations_agent import UnitOperationConfig
@@ -25,7 +32,6 @@ except ImportError:
     _API_AVAILABLE = False
 
 __all__ = [
-    "MolecularPropertyPredictor",
     "PropertyPredictionAgent", 
     "SolubilityAgent",
     "ToxicityAgent",
@@ -36,6 +42,10 @@ __all__ = [
     "MolecularFeatureExtractor",
     "SMILESProcessor"
 ]
+
+# Add models if available
+if _MODELS_AVAILABLE:
+    __all__.append("MolecularPropertyPredictor")
 
 # Add API utilities if available
 if _API_AVAILABLE:
@@ -51,5 +61,5 @@ import sys
 if 'torch' in sys.modules:
     import torch
     if not torch.cuda.is_available():
-        print("🔧 Chemistry Agents: CPU mode enabled")
-        print("💡 For faster performance, see CPU_OPTIMIZATION_GUIDE.md")
+        print("Chemistry Agents: CPU mode enabled")
+        print("For faster performance, see CPU_OPTIMIZATION_GUIDE.md")

@@ -169,6 +169,9 @@ class PropertyPredictionAgent(BaseChemistryAgent):
     
     def _predict_neural_network(self, smiles: str) -> float:
         """Make prediction using neural network model"""
+        if self.model is None:
+            raise ValueError("Neural network model is not loaded")
+            
         features = self.feature_extractor.extract_features(smiles)
         if features is None:
             raise ValueError("Failed to extract molecular features")
@@ -181,6 +184,9 @@ class PropertyPredictionAgent(BaseChemistryAgent):
     
     def _predict_transformer(self, smiles: str) -> float:
         """Make prediction using transformer model"""
+        if self.model is None:
+            raise ValueError("Transformer model is not loaded")
+            
         processed_smiles, valid_mask = self.smiles_processor.process_smiles_batch([smiles])
         
         if not valid_mask[0]:
@@ -239,6 +245,10 @@ class PropertyPredictionAgent(BaseChemistryAgent):
     
     def _predict_batch_neural_network(self, smiles_list: List[str]) -> List[Optional[float]]:
         """Batch prediction for neural network model"""
+        if self.model is None:
+            self.logger.error("Neural network model is not loaded")
+            return [None] * len(smiles_list)
+            
         features_batch, valid_mask = self.feature_extractor.extract_batch_features(smiles_list)
         
         if len(features_batch) == 0:
@@ -264,6 +274,10 @@ class PropertyPredictionAgent(BaseChemistryAgent):
     
     def _predict_batch_transformer(self, smiles_list: List[str]) -> List[Optional[float]]:
         """Batch prediction for transformer model"""
+        if self.model is None:
+            self.logger.error("Transformer model is not loaded")
+            return [None] * len(smiles_list)
+            
         processed_smiles, valid_mask = self.smiles_processor.process_smiles_batch(smiles_list)
         
         if not processed_smiles:
