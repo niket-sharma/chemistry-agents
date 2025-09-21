@@ -32,12 +32,12 @@ def main():
         config = AgentConfig(device="cpu", log_level="WARNING")
         agent = create_intelligent_chemberta_agent(config)
 
-        print(f"\n✓ Agent loaded successfully!")
-        print(f"✓ Base ChemBERTa: {'Loaded' if agent.is_loaded else 'Not Loaded'}")
-        print(f"✓ Specialized Models: {len(agent.specialized_models)} available")
+        print(f"\n[+] Agent loaded successfully!")
+        print(f"[+] Base ChemBERTa: {'Loaded' if agent.is_loaded else 'Not Loaded'}")
+        print(f"[+] Specialized Models: {len(agent.specialized_models)} available")
 
         if not agent.specialized_models:
-            print("\n⚠️  No specialized models found. The agent will use general ChemBERTa.")
+            print("\n[!] No specialized models found. The agent will use general ChemBERTa.")
             print("   To enable specialized routing, run: python train_task_specific_chemberta.py")
 
         print("\n" + "=" * 60)
@@ -57,20 +57,20 @@ def main():
 
             # Show task detection
             task_type, confidence = agent.detect_task_type(query)
-            print(f"🧠 Detected Task: {task_type} (confidence: {confidence:.2f})")
+            print(f"[BRAIN] Detected Task: {task_type} (confidence: {confidence:.2f})")
 
             # Show molecules found
             molecules = agent._extract_molecules_from_query(query)
             if molecules:
-                print(f"🧪 Molecules Found: {', '.join(molecules)}")
+                print(f"[CHEM] Molecules Found: {', '.join(molecules)}")
 
             # Show routing decision
             if task_type in agent.specialized_models and confidence > 0.3:
-                print(f"🎯 Routing: Using specialized {task_type} ChemBERTa model")
+                print(f"[ROUTE] Using specialized {task_type} ChemBERTa model")
             else:
-                print(f"🔄 Routing: Using general ChemBERTa analysis")
+                print(f"[ROUTE] Using general ChemBERTa analysis")
 
-            print("\n📝 Agent Response:")
+            print("\n[RESPONSE] Agent Response:")
             print("-" * 20)
 
             # Get full response
