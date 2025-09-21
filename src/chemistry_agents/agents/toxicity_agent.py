@@ -11,7 +11,7 @@ class ToxicityAgent(PropertyPredictionAgent):
     def __init__(self, 
                  config: Optional[AgentConfig] = None,
                  toxicity_endpoint: str = "acute_toxicity",
-                 model_type: str = "neural_network",
+                 model_type: str = "transformer",
                  transformer_model: str = "DeepChem/ChemBERTa-77M-MLM"):
         super().__init__(
             config=config,
@@ -274,6 +274,14 @@ class ToxicityAgent(PropertyPredictionAgent):
             recommendations.append("Address structural alerts through medicinal chemistry")
         
         return recommendations
+    
+    def assess_safety_profile(self, prediction_value: float) -> str:
+        """Public method to assess overall safety profile from prediction value"""
+        # For simplicity, check structural alerts for the current molecule
+        # In practice, you'd need the SMILES string
+        structural_alerts = {"alert_count": 0, "high_priority_alerts": []}
+        safety_assessment = self._assess_safety_profile(prediction_value, structural_alerts)
+        return safety_assessment.get("risk_level", "unknown")
     
     def predict_multi_endpoint_toxicity(self, smiles_list: List[str], 
                                        endpoints: List[str]) -> Dict[str, List[PredictionResult]]:

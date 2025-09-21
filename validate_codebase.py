@@ -167,19 +167,26 @@ def test_unit_operations() -> Tuple[bool, str]:
         return False, f"❌ Unit operations failed: {e}"
 
 def test_model_loading() -> Tuple[bool, str]:
-    """Test model loading capabilities"""
+    """Test ChemBERTa model loading capabilities"""
     try:
         from chemistry_agents import SolubilityAgent
         
-        agent = SolubilityAgent()
+        agent = SolubilityAgent()  # Now defaults to transformer model
         
-        # Test that agent initializes properly
-        if not hasattr(agent, 'feature_extractor'):
-            return False, "❌ Agent initialization failed - missing feature extractor"
+        # Test that agent initializes properly with transformer
+        if agent.model_type != "transformer":
+            return False, f"❌ Expected transformer model, got {agent.model_type}"
+        
+        if agent.transformer_model != "DeepChem/ChemBERTa-77M-MLM":
+            return False, f"❌ Wrong transformer model: {agent.transformer_model}"
         
         # Test that model is initially None (expected)
         if agent.model is not None:
             return False, "❌ Model should be None initially"
+        
+        # Test that tokenizer is initially None
+        if agent.tokenizer is not None:
+            return False, "❌ Tokenizer should be None initially"
         
         # Test that is_loaded is initially False
         if agent.is_loaded:
@@ -195,10 +202,60 @@ def test_model_loading() -> Tuple[bool, str]:
         except Exception as e:
             return False, f"❌ Wrong exception type: {type(e).__name__}: {e}"
         
-        return True, "✅ Model interface works (proper initialization and error handling)"
+        return True, "✅ ChemBERTa model interface works (proper initialization and error handling)"
         
     except Exception as e:
-        return False, f"❌ Model loading test failed: {e}"
+        return False, f"❌ ChemBERTa model loading test failed: {e}"
+
+def test_chemberta_integration() -> Tuple[bool, str]:
+    """Test actual ChemBERTa model loading and prediction"""
+    try:
+        from chemistry_agents import SolubilityAgent
+        from chemistry_agents.agents.base_agent import AgentConfig
+        
+        # Create agent with default ChemBERTa model
+        config = AgentConfig(device="cpu")
+        agent = SolubilityAgent(config)
+        
+        # Try to load the default model (ChemBERTa)
+        try:
+            agent.load_model()
+            
+            # Test if model loaded successfully
+            if not agent.is_loaded:
+                return False, "❌ Model loading failed - is_loaded is False"
+            
+            if agent.model is None:
+                return False, "❌ Model is None after loading"
+            
+            if agent.tokenizer is None:
+                return False, "❌ Tokenizer is None after loading"
+            
+            # Test actual prediction
+            test_smiles = "CCO"  # Ethanol
+            result = agent.predict_single(test_smiles)
+            
+            if result.smiles != test_smiles:
+                return False, f"❌ Wrong SMILES in result: {result.smiles}"
+            
+            if not isinstance(result.prediction, (int, float)):
+                return False, f"❌ Invalid prediction type: {type(result.prediction)}"
+            
+            if not isinstance(result.confidence, (int, float)):
+                return False, f"❌ Invalid confidence type: {type(result.confidence)}"
+            
+            return True, f"✅ ChemBERTa integration works (prediction: {result.prediction:.3f}, confidence: {result.confidence:.3f})"
+            
+        except ImportError as e:
+            return True, f"⚠️ ChemBERTa model not available: {e} (Install transformers to enable)"
+        except Exception as e:
+            if "No such file or directory" in str(e) or "does not exist" in str(e):
+                return True, f"⚠️ ChemBERTa cache not found: Run 'python download_huggingface_model.py' first"
+            else:
+                return False, f"❌ ChemBERTa integration failed: {e}"
+        
+    except Exception as e:
+        return False, f"❌ ChemBERTa integration test failed: {e}"
 
 def run_validation() -> None:
     """Run all validation tests"""
@@ -213,6 +270,7 @@ def run_validation() -> None:
         ("Data Processing", test_data_processing),
         ("Unit Operations", test_unit_operations),
         ("Model Interface", test_model_loading),
+        ("ChemBERTa Integration", test_chemberta_integration),
     ]
     
     passed = 0

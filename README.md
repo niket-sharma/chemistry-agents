@@ -501,6 +501,64 @@ pre-commit install
 - **Documentation**: Improve examples and tutorials
 - **Testing**: Expand test coverage and add benchmarks
 
+Complete Validation Plan
+
+● Here's your complete validation plan:
+
+  Run These Commands in Order:
+
+  Step 1: Core Functionality (5 min)
+
+  cd C:\Users\Niket
+  Sharma\llmapp\chemistry-agents
+  python validate_codebase.py
+
+  Step 2: Training Pipeline (10 min)
+
+  python test_training.py
+
+  Step 3: Examples (5 min)
+
+  python examples\basic_usage.py
+
+  Step 4: Unit Operations (2 min)
+
+  # Check if unit operations example
+  exists
+  dir examples\*unit*
+  # If it exists, run it
+
+  Step 5: Manual Model Training (15 min)      
+
+  cd scripts
+  python train_model.py --data_path
+  ../data/sample_solubility.csv
+  --target_column logS --epochs 20
+  --model_name solubility_model
+
+  What Each Test Validates:
+
+  1. validate_codebase.py - Tests all core    
+   functionality without training
+  2. test_training.py - Tests complete        
+  training pipeline end-to-end
+  3. examples/basic_usage.py - Tests
+  user-facing examples
+  4. Manual training - Tests real model       
+  training with your data
+
+  Expected Results:
+
+  - ✅ All imports work
+  - ✅ Feature extraction processes
+  molecules correctly
+  - ✅ Agents initialize without errors       
+  - ✅ Data processing handles invalid        
+  SMILES
+  - ✅ Unit operations calculations work      
+  - ✅ Training completes and saves models    
+  - ✅ Models can be loaded for inference 
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

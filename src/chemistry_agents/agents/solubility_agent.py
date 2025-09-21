@@ -10,7 +10,7 @@ class SolubilityAgent(PropertyPredictionAgent):
     
     def __init__(self, 
                  config: Optional[AgentConfig] = None,
-                 model_type: str = "neural_network",
+                 model_type: str = "transformer",
                  transformer_model: str = "DeepChem/ChemBERTa-77M-MLM"):
         super().__init__(
             config=config,
@@ -66,6 +66,10 @@ class SolubilityAgent(PropertyPredictionAgent):
         }
         
         return interpretations.get(solubility_class, "Unknown solubility class")
+    
+    def classify_solubility(self, log_s_value: float) -> str:
+        """Public method to classify solubility based on log S value"""
+        return self._classify_solubility(log_s_value)
     
     def _check_lipinski_rule(self, smiles: str) -> Dict[str, Any]:
         """Check Lipinski's Rule of Five compliance"""

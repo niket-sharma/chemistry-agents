@@ -192,19 +192,51 @@ def create_datasets(processor, train_df, val_df, test_df, args, logger):
         input_dim = train_features_norm.shape[1]
         
     else:  # transformer
-        logger.info("Creating transformer datasets...")
+        logger.info("Creating ChemBERTa transformer datasets...")
         from transformers import AutoTokenizer
         
-        tokenizer = AutoTokenizer.from_pretrained(args.transformer_model)
+        class ChemBERTaDataset(torch.utils.data.Dataset):
+            def __init__(self, smiles_list, targets, tokenizer, max_length=512):
+                self.smiles_list = smiles_list
+                self.targets = torch.FloatTensor(targets)
+                self.tokenizer = tokenizer
+                self.max_length = max_length
+                
+            def __len__(self):
+                return len(self.smiles_list)
+                
+            def __getitem__(self, idx):
+                smiles = self.smiles_list[idx]
+                target = self.targets[idx]
+                
+                encoding = self.tokenizer(
+                    smiles,
+                    truncation=True,
+                    padding='max_length',
+                    max_length=self.max_length,
+                    return_tensors='pt'
+                )
+                
+                return {
+                    'input_ids': encoding['input_ids'].flatten(),
+                    'attention_mask': encoding['attention_mask'].flatten(),
+                    'target': target
+                }
         
-        train_dataset = MolecularPropertyDataset(
+        # Load tokenizer with cache
+        tokenizer = AutoTokenizer.from_pretrained(
+            args.transformer_model,
+            cache_dir="models/huggingface_cache"
+        )
+        
+        train_dataset = ChemBERTaDataset(
             train_df[args.smiles_column].tolist(),
             train_df[args.target_column].values,
             tokenizer
         )
         
         if len(val_df) > 0:
-            val_dataset = MolecularPropertyDataset(
+            val_dataset = ChemBERTaDataset(
                 val_df[args.smiles_column].tolist(),
                 val_df[args.target_column].values,
                 tokenizer
@@ -212,7 +244,7 @@ def create_datasets(processor, train_df, val_df, test_df, args, logger):
         else:
             val_dataset = None
         
-        test_dataset = MolecularPropertyDataset(
+        test_dataset = ChemBERTaDataset(
             test_df[args.smiles_column].tolist(),
             test_df[args.target_column].values,
             tokenizer
@@ -233,10 +265,31 @@ def create_model(args, input_dim, device):
             dropout_rate=args.dropout_rate
         )
     else:  # transformer
-        model = MolecularTransformer(
+        # For ChemBERTa, we'll use a simpler approach with a prediction head
+        from transformers import AutoModel, AutoTokenizer
+        import torch.nn as nn
+        
+        class ChemBERTaForRegression(nn.Module):
+            def __init__(self, model_name, output_dim=1, dropout_rate=0.1):
+                super().__init__()
+                self.bert = AutoModel.from_pretrained(model_name, cache_dir="models/huggingface_cache")
+                hidden_dim = self.bert.config.hidden_size  # Get actual hidden size from model config
+                self.dropout = nn.Dropout(dropout_rate)
+                self.regressor = nn.Sequential(
+                    nn.Linear(hidden_dim, hidden_dim // 2),
+                    nn.ReLU(),
+                    nn.Dropout(dropout_rate),
+                    nn.Linear(hidden_dim // 2, output_dim)
+                )
+                
+            def forward(self, input_ids, attention_mask):
+                outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
+                pooled_output = outputs.last_hidden_state.mean(dim=1)  # Mean pooling
+                pooled_output = self.dropout(pooled_output)
+                return self.regressor(pooled_output)
+        
+        model = ChemBERTaForRegression(
             model_name=args.transformer_model,
-            hidden_dim=256,
-            num_layers=2,
             output_dim=1,
             dropout_rate=args.dropout_rate
         )
@@ -407,9 +460,24 @@ def save_model_and_results(model, args, metrics, history, logger):
         'training_history': history
     }
     
+    # Convert numpy types to Python types for JSON serialization
+    def convert_numpy_types(obj):
+        if isinstance(obj, dict):
+            return {key: convert_numpy_types(value) for key, value in obj.items()}
+        elif isinstance(obj, list):
+            return [convert_numpy_types(item) for item in obj]
+        elif hasattr(obj, 'item'):  # numpy scalar
+            return obj.item()
+        elif hasattr(obj, 'tolist'):  # numpy array
+            return obj.tolist()
+        else:
+            return obj
+    
+    results_serializable = convert_numpy_types(results)
+    
     results_path = os.path.join(args.output_dir, f"{args.model_name}_results.json")
     with open(results_path, 'w') as f:
-        json.dump(results, f, indent=2)
+        json.dump(results_serializable, f, indent=2)
     
     logger.info(f"Results saved to {results_path}")
 

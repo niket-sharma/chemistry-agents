@@ -125,12 +125,29 @@ dmypy.json
 
 # Model files and data
 *.pth
+*.pt
 *.pkl
 *.h5
 *.hdf5
+*.bin
+*.safetensors
 data/
+datasets/
 checkpoints/
 logs/
+models/
+trained_models/
+test_models/
+benchmark_results/
+
+# Hugging Face cache
+.cache/
+transformers_cache/
+huggingface_hub/
+
+# ChemBERTa specific
+chemberta_cache/
+molecular_data/
 
 # IDE files
 .vscode/

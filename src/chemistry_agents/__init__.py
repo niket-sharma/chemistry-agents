@@ -15,6 +15,13 @@ except ImportError as e:
     _MODELS_AVAILABLE = False
 
 from .agents import PropertyPredictionAgent, SolubilityAgent, ToxicityAgent, DrugDiscoveryAgent, UnitOperationsAgent
+
+# Import LLM Agent (may require additional dependencies)
+try:
+    from .agents.chemistry_llm_agent import ChemistryLLMAgent
+    _LLM_AGENT_AVAILABLE = True
+except ImportError:
+    _LLM_AGENT_AVAILABLE = False
 from .agents.base_agent import AgentConfig
 from .agents.unit_operations_agent import UnitOperationConfig
 from .utils import MolecularFeatureExtractor, SMILESProcessor
@@ -32,7 +39,7 @@ except ImportError:
     _API_AVAILABLE = False
 
 __all__ = [
-    "PropertyPredictionAgent", 
+    "PropertyPredictionAgent",
     "SolubilityAgent",
     "ToxicityAgent",
     "DrugDiscoveryAgent",
@@ -42,6 +49,10 @@ __all__ = [
     "MolecularFeatureExtractor",
     "SMILESProcessor"
 ]
+
+# Add LLM Agent if available
+if _LLM_AGENT_AVAILABLE:
+    __all__.append("ChemistryLLMAgent")
 
 # Add models if available
 if _MODELS_AVAILABLE:

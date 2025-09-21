@@ -17,6 +17,7 @@ mordred
 transformers
 tokenizers
 datasets
+sentencepiece
 
 # Deep Learning Utilities
 pytorch-lightning

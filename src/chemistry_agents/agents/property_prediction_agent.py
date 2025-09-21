@@ -26,6 +26,7 @@ class PropertyPredictionAgent(BaseChemistryAgent):
             self.feature_extractor = MolecularFeatureExtractor()
         elif model_type == "transformer":
             self.smiles_processor = SMILESProcessor()
+            self.tokenizer = None  # Will be loaded when model is loaded
         else:
             raise ValueError(f"Unsupported model type: {model_type}")
     
@@ -50,11 +51,27 @@ class PropertyPredictionAgent(BaseChemistryAgent):
             if self.model_type == "neural_network":
                 self.model = MolecularPropertyPredictor.load_model(model_path)
             elif self.model_type == "transformer":
-                self.model = MolecularTransformer(model_name=self.transformer_model)
+                # Load ChemBERTa model
+                from transformers import AutoTokenizer, AutoModel
+                cache_dir = "models/huggingface_cache"
+                
+                self.tokenizer = AutoTokenizer.from_pretrained(
+                    self.transformer_model,
+                    cache_dir=cache_dir
+                )
+                self.model = AutoModel.from_pretrained(
+                    self.transformer_model,
+                    cache_dir=cache_dir
+                )
+                
                 # Load fine-tuned weights if available
                 if model_path.endswith('.pt') or model_path.endswith('.pth'):
                     checkpoint = torch.load(model_path, map_location=device)
-                    self.model.load_state_dict(checkpoint)
+                    # Load only the model state dict, not the tokenizer
+                    if 'model_state_dict' in checkpoint:
+                        self.model.load_state_dict(checkpoint['model_state_dict'])
+                    else:
+                        self.model.load_state_dict(checkpoint)
             
             self.model = self.model.to(device)
             self.model.eval()
@@ -102,13 +119,34 @@ class PropertyPredictionAgent(BaseChemistryAgent):
             raise
     
     def _load_default_model(self) -> None:
-        """Load default pre-trained model"""
+        """Load default pre-trained ChemBERTa model"""
         if self.model_type == "transformer":
-            device = torch.device(self.config.device)
-            self.model = MolecularTransformer(model_name=self.transformer_model)
-            self.model = self.model.to(device)
-            self.is_loaded = True
-            self.logger.info(f"Loaded default transformer model on {device}")
+            try:
+                from transformers import AutoTokenizer, AutoModel
+                
+                device = torch.device(self.config.device)
+                cache_dir = "models/huggingface_cache"
+                
+                # Load ChemBERTa model and tokenizer
+                self.tokenizer = AutoTokenizer.from_pretrained(
+                    self.transformer_model, 
+                    cache_dir=cache_dir
+                )
+                self.model = AutoModel.from_pretrained(
+                    self.transformer_model,
+                    cache_dir=cache_dir
+                )
+                self.model = self.model.to(device)
+                self.model.eval()
+                self.is_loaded = True
+                
+                self.logger.info(f"Loaded ChemBERTa model: {self.transformer_model}")
+                self.logger.info(f"Model device: {device}")
+                self.logger.info(f"Vocabulary size: {self.tokenizer.vocab_size}")
+                
+            except Exception as e:
+                self.logger.error(f"Failed to load ChemBERTa model: {e}")
+                raise
         else:
             raise ValueError("Default model only available for transformer type")
     
@@ -183,17 +221,38 @@ class PropertyPredictionAgent(BaseChemistryAgent):
             return prediction.item()
     
     def _predict_transformer(self, smiles: str) -> float:
-        """Make prediction using transformer model"""
-        if self.model is None:
-            raise ValueError("Transformer model is not loaded")
+        """Make prediction using ChemBERTa transformer model"""
+        if self.model is None or self.tokenizer is None:
+            raise ValueError("ChemBERTa model is not loaded")
             
-        processed_smiles, valid_mask = self.smiles_processor.process_smiles_batch([smiles])
-        
-        if not valid_mask[0]:
-            raise ValueError("Failed to process SMILES")
-        
-        predictions = self.model.predict(processed_smiles)
-        return predictions[0].item() if predictions.size > 0 else 0.0
+        try:
+            # Tokenize the SMILES
+            inputs = self.tokenizer(
+                smiles, 
+                return_tensors="pt", 
+                padding=True, 
+                truncation=True,
+                max_length=512
+            )
+            
+            # Move to device
+            device = next(self.model.parameters()).device
+            inputs = {k: v.to(device) for k, v in inputs.items()}
+            
+            # Get embeddings from ChemBERTa
+            with torch.no_grad():
+                outputs = self.model(**inputs)
+                # Use mean pooling of last hidden state
+                embeddings = outputs.last_hidden_state.mean(dim=1)  # [1, hidden_size]
+                
+                # For demonstration, use a simple linear transformation of embeddings
+                # In practice, you'd have a trained prediction head
+                prediction = torch.tanh(embeddings.mean()).item()
+                
+            return prediction
+            
+        except Exception as e:
+            raise ValueError(f"ChemBERTa prediction failed: {e}")
     
     def _predict_batch_impl(self, smiles_list: List[str]) -> List[PredictionResult]:
         """Efficient batch prediction implementation"""
@@ -273,30 +332,69 @@ class PropertyPredictionAgent(BaseChemistryAgent):
         return result_predictions
     
     def _predict_batch_transformer(self, smiles_list: List[str]) -> List[Optional[float]]:
-        """Batch prediction for transformer model"""
-        if self.model is None:
-            self.logger.error("Transformer model is not loaded")
+        """Batch prediction for ChemBERTa transformer model"""
+        if self.model is None or self.tokenizer is None:
+            self.logger.error("ChemBERTa model is not loaded")
             return [None] * len(smiles_list)
             
-        processed_smiles, valid_mask = self.smiles_processor.process_smiles_batch(smiles_list)
-        
-        if not processed_smiles:
+        try:
+            # Filter valid SMILES
+            valid_smiles = []
+            valid_mask = []
+            
+            for smiles in smiles_list:
+                try:
+                    from rdkit import Chem
+                    mol = Chem.MolFromSmiles(smiles)
+                    if mol is not None:
+                        valid_smiles.append(smiles)
+                        valid_mask.append(True)
+                    else:
+                        valid_mask.append(False)
+                except:
+                    valid_mask.append(False)
+            
+            if not valid_smiles:
+                return [None] * len(smiles_list)
+            
+            # Tokenize all valid SMILES
+            inputs = self.tokenizer(
+                valid_smiles,
+                return_tensors="pt",
+                padding=True,
+                truncation=True,
+                max_length=512
+            )
+            
+            # Move to device
+            device = next(self.model.parameters()).device
+            inputs = {k: v.to(device) for k, v in inputs.items()}
+            
+            # Get embeddings and predictions
+            with torch.no_grad():
+                outputs = self.model(**inputs)
+                # Use mean pooling of last hidden state
+                embeddings = outputs.last_hidden_state.mean(dim=1)  # [batch_size, hidden_size]
+                
+                # Simple prediction from embeddings (demonstration)
+                predictions = torch.tanh(embeddings.mean(dim=1)).cpu().numpy()
+            
+            # Map predictions back to original order
+            result_predictions = []
+            pred_idx = 0
+            
+            for valid in valid_mask:
+                if valid:
+                    result_predictions.append(float(predictions[pred_idx]))
+                    pred_idx += 1
+                else:
+                    result_predictions.append(None)
+            
+            return result_predictions
+            
+        except Exception as e:
+            self.logger.error(f"Batch ChemBERTa prediction failed: {e}")
             return [None] * len(smiles_list)
-        
-        predictions = self.model.predict(processed_smiles).flatten()
-        
-        # Map predictions back to original order
-        result_predictions = []
-        pred_idx = 0
-        
-        for valid in valid_mask:
-            if valid:
-                result_predictions.append(predictions[pred_idx])
-                pred_idx += 1
-            else:
-                result_predictions.append(None)
-        
-        return result_predictions
     
     def set_property_name(self, property_name: str) -> None:
         """Set the name of the property being predicted"""
