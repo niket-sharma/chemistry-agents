@@ -100,8 +100,16 @@ Test the intelligent agent with various chemistry questions:
 python demo_intelligent_chemberta.py
 ```
 
-### 2. Interactive Testing
-Chat directly with the agent:
+### 2. Web UI Interface
+Launch a user-friendly web interface:
+
+```bash
+python ui_intelligent_agent.py
+```
+Then open http://127.0.0.1:7860 in your browser
+
+### 3. Interactive Testing
+Chat directly with the agent in terminal:
 
 ```bash
 python test_intelligent_agent_interactive.py
