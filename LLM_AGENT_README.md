@@ -1,22 +1,90 @@
-# Chemistry LLM Agent - Usage Guide
+# Chemistry AI Agents - Complete Usage Guide
 
 ## Overview
 
-The Chemistry LLM Agent is a **true conversational AI agent** that can reason about chemistry, plan multi-step analyses, and use specialized tools to answer complex chemistry questions.
+This repository now features **two revolutionary AI agents** for chemistry:
+
+### 🔥 **Hybrid LLM+ChemBERT Agent**
+The ultimate chemistry AI that combines OpenAI GPT reasoning with specialized ChemBERT molecular intelligence. Perfect for complex drug design, safety assessment, and educational applications.
+
+### 🧠 **Pure ChemBERT Agent**
+Fast, specialized molecular property prediction using fine-tuned ChemBERT models with automatic task detection and routing.
 
 ## Quick Start
 
-### 1. Basic Usage
+### 🔥 Hybrid LLM+ChemBERT Agent
 
+#### 1. Setup & Initialization
 ```python
-from chemistry_agents import ChemistryLLMAgent
+from hybrid_agent_concept import HybridChemistryAgent
+import asyncio
+import os
 
-# Create agent
-agent = ChemistryLLMAgent()
+# Set your OpenAI API key
+os.environ['OPENAI_API_KEY'] = 'your_key_here'
+
+async def main():
+    # Initialize hybrid agent
+    agent = HybridChemistryAgent()
+    await agent.initialize()
+
+    # Complex chemistry query
+    result = await agent.analyze_complex_query(
+        "I need a painkiller similar to ibuprofen but with better water solubility and reduced GI toxicity"
+    )
+
+    print("LLM Reasoning:", result.llm_reasoning)
+    print("ChemBERT Predictions:", result.chemberta_predictions)
+    print("Final Answer:", result.synthesis)
+
+asyncio.run(main())
+```
+
+#### 2. Advanced Applications
+```python
+# Drug Design Assistant
+design_agent = DrugDesignAssistant()
+await design_agent.initialize()
+
+result = await design_agent.design_drug_variant(
+    base_drug="acetaminophen",
+    requirements="reduced liver toxicity, improved bioavailability"
+)
+
+# Chemistry Tutor
+tutor = ChemistryTutor()
+await tutor.initialize()
+
+explanation = await tutor.explain_with_examples(
+    "structure-activity relationships in beta-lactam antibiotics"
+)
+
+# Safety Assessment
+safety_agent = SafetyAssessmentAgent()
+await safety_agent.initialize()
+
+assessment = await safety_agent.assess_safety(
+    compound="toluene",
+    use_case="industrial solvent with environmental release"
+)
+```
+
+### 🧠 Pure ChemBERT Agent
+
+#### 1. Basic Usage
+```python
+from chemistry_agents.agents.intelligent_chemberta_agent import create_intelligent_chemberta_agent
+
+# Create ChemBERT agent
+agent = create_intelligent_chemberta_agent()
 
 # Ask chemistry questions
 response = agent.chat("What makes benzene toxic?")
 print(response)
+
+# Get task detection
+task_type, confidence = agent.detect_task_type("How soluble is aspirin?")
+print(f"Detected: {task_type} (confidence: {confidence})")
 ```
 
 ### 2. Running Examples
