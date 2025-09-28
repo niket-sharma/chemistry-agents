@@ -475,6 +475,10 @@ python train_task_specific_chemberta.py
 - ✅ **Intelligent Routing**: Uses appropriate specialized models
 - ✅ **Conversational AI**: Provides detailed molecular analysis
 
+## Preprint
+
+[Intelligent Chemistry Agents: A Framework for Accessible Molecular Property Prediction via LLM-Tool Integration and Specialized Model Routing](https://www.researchgate.net/publication/395926999_Intelligent_Chemistry_Agents_A_Framework_for_Accessible_Molecular_Property_Prediction_via_LLM-Tool_Integration_and_Specialized_Model_Routing)
+
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) file for details.
