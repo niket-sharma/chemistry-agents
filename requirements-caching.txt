@@ -1,0 +1,13 @@
+# Additional requirements for caching and performance optimization features
+# Install with: pip install -r requirements-caching.txt
+
+# Memory and process monitoring
+psutil>=5.9.0
+
+# YAML configuration support
+pyyaml>=6.0
+
+# Already included in core requirements but listed for clarity:
+# - sqlite3 (built-in with Python)
+# - json (built-in with Python)
+# - pickle (built-in with Python)

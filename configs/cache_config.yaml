@@ -1,0 +1,88 @@
+# Cache Configuration for Chemistry Agents
+# This file configures caching behavior for predictions, embeddings, and performance profiling
+
+# General cache settings
+cache:
+  # Base directory for all caches
+  base_dir: "cache"
+
+  # Enable/disable caching globally
+  enabled: true
+
+  # Maximum memory entries before eviction
+  max_memory_entries: 5000
+
+# Prediction cache settings
+prediction_cache:
+  # Cache directory (relative to base_dir)
+  dir: "predictions"
+
+  # Default TTL (time-to-live) in seconds
+  # 86400 = 1 day, 604800 = 7 days, 2592000 = 30 days
+  default_ttl: 2592000  # 30 days
+
+  # Maximum memory entries
+  max_memory_entries: 5000
+
+  # Enable disk persistence
+  enable_disk_cache: true
+
+  # Task-specific TTL settings (in seconds)
+  task_ttl:
+    toxicity: 2592000      # 30 days
+    solubility: 2592000    # 30 days
+    bioactivity: 2592000   # 30 days
+    general: 604800        # 7 days
+
+# Embedding cache settings
+embedding_cache:
+  # Cache directory (relative to base_dir)
+  dir: "embeddings"
+
+  # Default TTL for embeddings (90 days)
+  default_ttl: 7776000
+
+  # Maximum memory entries
+  max_memory_entries: 10000
+
+  # Enable disk persistence
+  enable_disk_cache: true
+
+# Performance profiling settings
+profiling:
+  # Enable/disable profiling
+  enabled: true
+
+  # Directory for performance reports
+  reports_dir: "cache/reports"
+
+  # Auto-save reports after N operations
+  auto_save_threshold: 1000
+
+  # Report format (json or txt)
+  report_format: "json"
+
+# Cache maintenance settings
+maintenance:
+  # Auto-cleanup old entries
+  auto_cleanup: true
+
+  # Cleanup interval (in seconds)
+  cleanup_interval: 86400  # 1 day
+
+  # Maximum age for entries (in seconds)
+  max_age: 7776000  # 90 days
+
+  # Maximum cache size (in MB)
+  max_cache_size_mb: 10000  # 10 GB
+
+# Logging settings
+logging:
+  # Log level for cache operations (DEBUG, INFO, WARNING, ERROR)
+  level: "INFO"
+
+  # Log cache hits/misses
+  log_cache_access: false
+
+  # Log performance metrics
+  log_performance: true
