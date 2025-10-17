@@ -160,6 +160,7 @@ molecular_data/
 # IDE files
 .vscode/
 .idea/
+.claude/
 *.swp
 *.swo
 *~
